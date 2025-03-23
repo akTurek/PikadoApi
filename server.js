@@ -1,7 +1,9 @@
 import express from 'express';
 import {db} from "./database/dbConnect.js"
 import userRouts from "./routes/auth.js";
-
+import groupRouts from "./routes/group.js";
+import cors from "cors";
+import cookieParser from "cookie-parser";
 
 const app = express();
 const port = 5003;
@@ -9,13 +11,28 @@ const port = 5003;
 app.use(express.json());
 
 
-   
+
+app.use(
+    cors({
+        origin: "http://localhost:3000",
+        credentials: true
+    })
+)
+
+app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Credentials", "true");
+    next();
+});
+  
+app.use(cookieParser());
+
 
 app.get('/', (req, res) => {
     res.send('Pozdravljen, Express!');
 });
 
 app.use('/api/users',userRouts)
+app.use('/api/group',groupRouts)
 
 
 
