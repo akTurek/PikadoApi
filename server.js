@@ -1,7 +1,7 @@
 import express from 'express';
-import {db} from "./database/dbConnect.js"
 import userRouts from "./routes/auth.js";
 import groupRouts from "./routes/group.js";
+import membersRouts from "./routes/members.js"
 import cors from "cors";
 import cookieParser from "cookie-parser";
 
@@ -15,12 +15,16 @@ app.use(express.json());
 app.use(
     cors({
         origin: "http://localhost:3000",
+        methods: 'GET, POST, PUT, PATCH, DELETE',
         credentials: true
     })
 )
 
+
+
+
 app.use((req, res, next) => {
-    res.header("Access-Control-Allow-Credentials", "true");
+    res.header("Access-Control-Allow-Headers", "Content-Type,Authorization");
     next();
 });
   
@@ -31,6 +35,7 @@ app.get('/', (req, res) => {
     res.send('Pozdravljen, Express!');
 });
 
+app.use('/api/members',membersRouts)
 app.use('/api/users',userRouts)
 app.use('/api/group',groupRouts)
 

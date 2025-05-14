@@ -9,7 +9,7 @@ export const login = async (req, res) => {
 
     console.log(req.body)
     try {
-        const q = "SELECT * FROM User WHERE username = ?";
+        const q = "SELECT * FROM user WHERE username = ?";
         const [rows] = await db.promise().query(q, [req.body.username]); 
 
         if (rows.length == 0) return res.status(404).json("Uporabnik ne obstaja");
@@ -24,7 +24,6 @@ export const login = async (req, res) => {
 
         res.cookie("accessToken", token, {
             httpOnly: true,
-       
             maxAge: 60 * 60 * 1000 // 1 ura
         }).status(200).json(other);
 
@@ -42,12 +41,12 @@ export const register = async (req, res) => {
 
 
     try {
-        const q = "SELECT * FROM User WHERE username = ?";
+        const q = "SELECT * FROM user WHERE username = ?";
         const [rows]= await db.promise().query(q, [req.body.username]); //[] samo podatki brez meta data
 
         if (rows.length ) return res.status(400).json("Uporabnik ze obstaja");
 
-        const q2 = "INSERT INTO User (`username`,`password`,`email`) VALUES (?,?,?)";
+        const q2 = "INSERT INTO user (`username`,`password`,`email`) VALUES (?,?,?)";
 
         const salt = bcrypt.genSaltSync(10);
         const hashedPassword = bcrypt.hashSync(req.body.password, salt);
