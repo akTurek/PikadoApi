@@ -124,3 +124,31 @@ export const kickPlayer = async (req,res) =>{
         return res.status(500).json(error);
     }
 }
+
+export const leave = async (req,res) =>{
+
+   
+    const token = req.cookies.accessToken;
+    console.log("LEAVE poslan piskotek "+token)
+    if (!token) return res.status(401).json("No token");
+
+
+    try {
+        const userInfo = await authToken(token)
+        const groupId = req.params.groupId
+
+
+        console.log("LEAVE "+groupId +" "+ userInfo.id,)
+
+
+        const q1 = "DELETE FROM user_group WHERE user_id =? AND group_id =?"
+
+        await db.promise().query(q1,[userInfo.id, groupId])
+        return res.status(200).json("You have leave group")
+
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json(error);
+    }
+}
