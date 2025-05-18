@@ -6,7 +6,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 
 const app = express();
-const port = 5004;
+const port = 5000;
 
 app.use(express.json());
 

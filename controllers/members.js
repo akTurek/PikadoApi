@@ -9,13 +9,18 @@ export const getMembers = async (req,res) =>{
     console.log("poslan piskotek: "+token)
     if (!token) return res.status(401).json("No token");
 
+    const groupToken = req.cookies.groupToken;
+    console.log("poslan piskotek: "+token)
+    if (!token) return res.status(401).json("No token");
+
     try {
 
         const userInfo = await authToken(token);
 
+
         const groupId = req.params.groupId;
 
-        console.log("Get members groupId, userId: "+groupId+" "+userInfo.id)
+        console.log("GET MEMBERS groupId, userId: "+groupId+" "+userInfo.id)
         
 
         const q = "SELECT ug.id, u.username, ug.num1st FROM user_group AS ug JOIN user AS u ON u.id = ug.user_id WHERE ug.group_id = ?"
