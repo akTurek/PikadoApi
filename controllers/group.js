@@ -6,7 +6,9 @@ import jwt from "jsonwebtoken";
 
 dotenv.config();
 
-
+//////
+//Creat Grup
+//////
 
 export const createGroup = async (req, res) => {
     console.log(req.body);
@@ -40,8 +42,6 @@ export const createGroup = async (req, res) => {
         ];
         
         const [data2] = await db.promise().query(q2, values2);
-
-
         return res.status(200).json(data);
 
     } catch (error) {

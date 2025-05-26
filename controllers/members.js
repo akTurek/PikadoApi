@@ -2,14 +2,13 @@ import {db} from "../database/dbConnect.js"
 import dotenv, { parse } from "dotenv";
 import {authToken} from "../middleware/auth.js"
 
+//////
+// Get Members Of Group
+//////
+
 export const getMembers = async (req,res) =>{
     
-
     const token = req.cookies.accessToken;
-    console.log("poslan piskotek: "+token)
-    if (!token) return res.status(401).json("No token");
-
-    const groupToken = req.cookies.groupToken;
     console.log("poslan piskotek: "+token)
     if (!token) return res.status(401).json("No token");
 
@@ -17,30 +16,14 @@ export const getMembers = async (req,res) =>{
 
         const userInfo = await authToken(token);
 
-
         const groupId = req.params.groupId;
 
         console.log("GET MEMBERS groupId, userId: "+groupId+" "+userInfo.id)
-        
 
-        const q = "SELECT ug.id, u.username, ug.num1st FROM user_group AS ug JOIN user AS u ON u.id = ug.user_id WHERE ug.group_id = ?"
-
+        const q = "SELECT ug.id, u.username, u.id AS userId, ug.num1st FROM user_group AS ug JOIN user AS u ON u.id = ug.user_id WHERE ug.group_id = ?"
 
         const [data] = await db.promise().query(q,[groupId]);
-
-        const q2 = "SELECT user_id FROM user_group WHERE group_id = ? AND role = 'admin'";
-
-        const [ownerId] = await db.promise().query(q2,[groupId]);
-
-
-        console.log("data2 "+ownerId[0])
-
-        return res.status(200).json({
-            members: data,
-            owner: ownerId[0].user_id
-        });
-
-
+        return res.status(200).json(data);
 
     } catch (error) {
         console.error(error);
@@ -48,6 +31,10 @@ export const getMembers = async (req,res) =>{
     }
 
 }
+
+//////
+//Change Ownership Of Group
+//////
 
 export const changeOwner = async (req,res) =>{
 
@@ -91,6 +78,10 @@ export const changeOwner = async (req,res) =>{
         }
 }
 
+//////
+//Kick Member From Group
+//////
+
 export const kickPlayer = async (req,res) =>{
 
     const token = req.cookies.accessToken;
@@ -129,6 +120,10 @@ export const kickPlayer = async (req,res) =>{
         return res.status(500).json(error);
     }
 }
+
+//////
+//Leave Group
+//////
 
 export const leave = async (req,res) =>{
 
