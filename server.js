@@ -2,7 +2,8 @@ import express from 'express';
 import userRouts from "./routes/auth.js";
 import groupRouts from "./routes/group.js";
 import membersRouts from "./routes/members.js"
-import invite from "./routes/invite.js"
+import inviteRouts from "./routes/invite.js"
+import friendsRouts from "./routes/friends.js"
 import cors from "cors";
 import cookieParser from "cookie-parser";
 
@@ -39,7 +40,8 @@ app.get('/', (req, res) => {
 app.use('/api/members',membersRouts)
 app.use('/api/users',userRouts)
 app.use('/api/group',groupRouts)
-app.use('/api/invites',invite)
+app.use('/api/invites',inviteRouts)
+app.use('/api/friends',friendsRouts)
 
 
 
