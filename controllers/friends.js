@@ -100,6 +100,9 @@ export const accFriendInvite = async (req,res) =>{
     }
 }
 
+//////
+//Decline invite to new friend
+//////
 
 export const decFriendInvite = async (req,res) =>{
 
@@ -127,6 +130,11 @@ export const decFriendInvite = async (req,res) =>{
     }
 }
 
+//////
+//Get list of friend invites
+/////
+
+
 export const getFriendsInvites = async (req,res) =>{
 
    
@@ -146,6 +154,32 @@ export const getFriendsInvites = async (req,res) =>{
         
         console.log("moja povabila "+data)
 
+        return res.status(200).json(data)
+
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json(error);
+    }
+}
+
+//////
+//Get list of friends
+//////
+
+export const getAllFriends = async (req,res) =>{
+
+   console.log("Pregled prijateljev")
+
+    const token = req.cookies.accessToken;
+    if (!token) return res.status(401).json("No token");
+
+
+    try {
+        const userInfo = await authToken(token)
+        const q = `SELECT DISTINCT u.id, u.username FROM friendships f JOIN user u ON (f.user_id_1 = ? AND f.user_id_2 = u.id) OR (f.user_id_2 = ? AND f.user_id_1 = u.id) WHERE f.status = 'accepted' AND u.id != ?`;
+        const [data] = await db.promise().query(q, [userInfo.id, userInfo.id, userInfo.id]);
+        console.log(data)
         return res.status(200).json(data)
 
 
