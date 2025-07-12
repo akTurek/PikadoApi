@@ -1,19 +1,23 @@
 import express from "express";
-import {findFriend,addFriend,accFriendInvite,decFriendInvite, getFriendsInvites, getAllFriends} from "../controllers/friends.js"
+import {
+  findFriend,
+  addFriend,
+  accFriendInvite,
+  decFriendInvite,
+  getFriendsInvites,
+  getAllFriends,
+  deliteFriend,
+} from "../controllers/friends.js";
 
+const router = express.Router();
 
+router.get("/findfriend/:friendName", findFriend);
+router.get("/getfriendsinvites", getFriendsInvites);
+router.get("/getallfriends", getAllFriends);
 
-const router = express.Router()
+router.post("/addfriend/:friendId", addFriend);
+router.put("/acc/:inviteId", accFriendInvite);
+router.put("/dec/:inviteId", decFriendInvite);
+router.delete("/unfriend/:friendId", deliteFriend);
 
-
-
-router.get("/findfriend/:friendName",findFriend)
-router.get("/getfriendsinvites",getFriendsInvites)
-router.get("/getallfriends",getAllFriends)
-
-router.post("/addfriend/:friendId",addFriend)
-router.put("/acc/:inviteId",accFriendInvite)
-router.put("/dec/:inviteId",decFriendInvite)
-
-
-export default router
+export default router;
