@@ -9,7 +9,6 @@ dotenv.config();
 //////
 //Creat Grup
 //////
-
 export const createGroup = async (req, res) => {
   console.log(req.body);
 
@@ -41,6 +40,9 @@ export const createGroup = async (req, res) => {
   }
 };
 
+//////
+//Fing Grup To Join
+//////
 export const findGroup = async (req, res) => {
   console.log(req.query.groupId);
 
@@ -64,6 +66,9 @@ export const findGroup = async (req, res) => {
   }
 };
 
+//////
+//Join Grup
+//////
 export const joinGroup = async (req, res) => {
   //preveri da se ne pridruzi skupini dvakrat
 
@@ -106,10 +111,15 @@ export const joinGroup = async (req, res) => {
   }
 };
 
+//////
+//Get List Of My Grup
+//////
 export const myGroups = async (req, res) => {
   const token = req.cookies.accessToken;
   console.log("poslan piskotek: " + token);
   if (!token) return res.status(401).json("No token");
+
+  console.log("Sem tukaj da podam skupine");
 
   try {
     const userInfo = await authToken(token);
@@ -121,8 +131,6 @@ export const myGroups = async (req, res) => {
 
     if (data.length == 0) return res.status(404).json("Nisi clan skupin");
 
-    console.log(data);
-
     return res.status(200).json(data);
   } catch (err) {
     console.error("Napaka pri poizvedbi:", err);
@@ -130,9 +138,11 @@ export const myGroups = async (req, res) => {
   }
 };
 
+//////
+//Get Group Data
+//////
 export const groupData = async (req, res) => {
   const token = req.cookies.accessToken;
-  console.log("MY GROUP poslan piskotek: " + token);
   if (!token) return res.status(401).json("No token");
 
   try {
@@ -151,28 +161,16 @@ export const groupData = async (req, res) => {
       expiresIn: "1h",
     });
 
-    res
-      .cookie("groupToken", groupToken, {
-        httpOnly: true,
-        maxAge: 60 * 60 * 1000, // 1 ura
-      })
-      .status(200)
-      .json(data[0]);
+    res.status(200).json(data[0]);
   } catch (err) {
     console.error("Napaka pri poizvedbi:", err);
     return res.status(500).json(err);
   }
 };
 
-export const leaveGroupPage = (req, res) => {
-  res
-    .clearCookie("groupToken", {
-      httpOnly: true,
-    })
-    .status(200)
-    .json("You have leaved group page");
-};
-
+//////
+//Delite Group
+//////
 export const deleteGroup = async (req, res) => {
   const token = req.cookies.accessToken;
   console.log("DELETEGROUP poslan piskotek " + token);

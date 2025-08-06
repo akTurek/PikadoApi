@@ -124,8 +124,6 @@ export const getFriendsInvites = async (req, res) => {
 
     const [data] = await db.promise().query(q, [userInfo.id]);
 
-    console.log("moja povabila " + data);
-
     return res.status(200).json(data);
   } catch (error) {
     console.error(error);

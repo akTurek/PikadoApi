@@ -22,7 +22,7 @@ export const login = async (req, res) => {
     if (!checkedPass)
       return res.status(400).json("Napačno uporabniško ime ali geslo");
 
-    const token = jwt.sign({ id: rows[0].id }, process.env.SECRETKEY, {
+    const token = jwt.sign({ id: rows[0].idz }, process.env.SECRETKEY, {
       expiresIn: "1h",
     });
 
