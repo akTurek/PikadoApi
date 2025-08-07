@@ -4,6 +4,7 @@ import groupRouts from "./routes/group.js";
 import membersRouts from "./routes/members.js";
 import inviteRouts from "./routes/invite.js";
 import friendsRouts from "./routes/friends.js";
+import gameRouts from "./routes/game.js";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 
@@ -36,6 +37,7 @@ app.use("/api/users", userRouts);
 app.use("/api/group", groupRouts);
 app.use("/api/invites", inviteRouts);
 app.use("/api/friends", friendsRouts);
+app.use("/api/game", gameRouts);
 
 app.listen(port, () => {
   console.log(`Strežnik teče na http://localhost:${port}`);

@@ -4,6 +4,7 @@ import { authToken } from "../middleware/auth.js";
 import { games } from "../middleware/gameInfo.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { json } from "express";
 
 dotenv.config();
 
@@ -20,7 +21,7 @@ export const pushGame = (gameId, ownerId) => {
     turnIndex: 0,
   };
 
-  console.log("gameId v pushGame " + gameId);
+  //console.log("gameId v pushGame " + gameId);
   games.set(gameId, game);
   pushPlayer(ownerId, gameId);
 };
@@ -51,7 +52,7 @@ export const pushPlayer = async (playerId, gameId) => {
   }
 
   game.players.push(player);
-  console.log(` Game ${gameId} state:`, JSON.stringify(game, null, 2));
+  //console.log(` Game ${gameId} state:`, JSON.stringify(game, null, 2));
 };
 
 //////
@@ -66,7 +67,7 @@ export const createGame = async (type, group_id, ownerId) => {
 
     const [data] = await db.promise().query(q, values);
 
-    console.log("Create game " + data.insertId);
+    //console.log("Create game " + data.insertId);
 
     pushGame(data.insertId, ownerId);
 
@@ -86,8 +87,58 @@ export const createGame = async (type, group_id, ownerId) => {
   }
 };
 
-export const getPlayers = async (type, group_id, ownerId) => {
+//////
+//Get Game Data
+//////
+export const myGame = async (req, res) => {
+  const token = req.cookies.accessToken;
+  if (!token) return res.status(401).json("No token");
+
   try {
-    return {};
-  } catch (error) {}
+    const userInfo = await authToken(token);
+    //Dodaj preveri ce je user res v game
+
+    const gameId = parseInt(req.params.gameId, 10);
+
+    const fullGame = games.get(gameId);
+
+    // console.log(
+    //   "refatch game info --------------------------------------------------------------" +
+    //     fullGame
+    // );
+
+    // console.log(gameId + " GameId poslan");
+
+    return res.status(200).json(fullGame);
+  } catch (err) {
+    console.error("Napaka pri poizvedbi:", err);
+    return res.status(500).json(err);
+  }
+};
+
+//////
+//Change Game Status
+//////
+export const startGame = async (req, res) => {
+  const token = req.cookies.accessToken;
+  if (!token) return res.status(401).json("No token");
+
+  try {
+    const userInfo = await authToken(token);
+    const { status } = req.body;
+    //Dodaj preveri ce je user res v game
+    //preveri ce je admin
+    //dodaj zapis v db
+
+    const gameId = parseInt(req.params.gameId, 10);
+
+    const fullGame = games.get(gameId);
+    fullGame.gameStatus = status;
+    console.log("game status set " + status + "game id " + gameId);
+
+    return res.status(200).json("Status set to active");
+  } catch (err) {
+    console.error("Napaka pri poizvedbi:", err);
+    return res.status(500).json(err);
+  }
 };

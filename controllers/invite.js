@@ -52,8 +52,8 @@ export const send = async (req, res) => {
       const data2 = await db.promise().query(q2, values2);
     }
 
-    console.log("Full game info ");
-    console.log(game.fullGame);
+    //console.log("Full game info ");
+    //console.log(game.fullGame);
 
     return res.status(200).json(game.fullGame);
   } catch (error) {
@@ -109,7 +109,7 @@ export const accInvite = async (req, res) => {
     const [rows] = await db.promise().query(q2, [inviteId]); //accept invite
 
     const { gameId, type } = rows[0]; // Destructure the first row
-    console.log(gameId + " gameId");
+    //console.log(gameId + " gameId");
 
     const q3 =
       "INSERT user_game (user_id, game_id, role, score ) VALUES (?,?,?,?)"; //create  user game
