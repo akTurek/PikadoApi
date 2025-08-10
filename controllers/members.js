@@ -5,6 +5,7 @@ import { authToken } from "../middleware/auth.js";
 //////
 // Get Members Of Group
 //////
+//MOD
 export const getMembers = async (req, res) => {
   const token = req.cookies.accessToken;
   console.log("poslan piskotek: " + token);
@@ -18,7 +19,7 @@ export const getMembers = async (req, res) => {
     console.log("GET MEMBERS groupId, userId: " + groupId + " " + userInfo.id);
 
     const q =
-      "SELECT ug.id, u.username, u.id AS userId, ug.num1st FROM user_group AS ug JOIN user AS u ON u.id = ug.user_id WHERE ug.group_id = ?";
+      "SELECT ug.id, u.username, u.id AS userId FROM user_group AS ug JOIN user AS u ON u.id = ug.user_id WHERE ug.group_id = ?";
 
     const [data] = await db.promise().query(q, [groupId]);
     return res.status(200).json(data);
@@ -31,6 +32,7 @@ export const getMembers = async (req, res) => {
 //////
 //Change Ownership Of Group
 //////
+//MOD
 export const changeOwner = async (req, res) => {
   const token = req.cookies.accessToken;
   console.log("poslan piskotek " + token);
@@ -71,7 +73,7 @@ export const changeOwner = async (req, res) => {
 //////
 //Kick Member From Group
 //////
-
+//MOD
 export const kickPlayer = async (req, res) => {
   const token = req.cookies.accessToken;
   console.log("poslan piskotek " + token);
@@ -108,6 +110,7 @@ export const kickPlayer = async (req, res) => {
 //////
 //Leave Group
 //////
+//MOD
 export const leave = async (req, res) => {
   const token = req.cookies.accessToken;
   console.log("LEAVE poslan piskotek " + token);

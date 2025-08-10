@@ -9,11 +9,12 @@ dotenv.config();
 //////
 //Creat Grup
 //////
+//MOD
 export const createGroup = async (req, res) => {
-  console.log(req.body);
+  //console.log(req.body);
 
   const token = req.cookies.accessToken;
-  console.log("poslan piskotek: " + token);
+  //console.log("poslan piskotek: " + token);
   if (!token) return res.status(401).json("No token");
 
   try {
@@ -21,7 +22,7 @@ export const createGroup = async (req, res) => {
     const salt = bcrypt.genSaltSync(10);
     const hashedPassword = bcrypt.hashSync(req.body.password1, salt);
 
-    const q = "INSERT INTO `group` (`name`, `joinPassword`) VALUES (?, ?)";
+    const q = "INSERT INTO `group` (`name`, `password`) VALUES (?, ?)";
 
     const values = [req.body.groupName, hashedPassword];
 
@@ -35,7 +36,7 @@ export const createGroup = async (req, res) => {
     const [data2] = await db.promise().query(q2, values2);
     return res.status(200).json(data);
   } catch (error) {
-    console.error(error);
+    //console.error(error);
     return res.status(500).json(error);
   }
 };
@@ -43,25 +44,28 @@ export const createGroup = async (req, res) => {
 //////
 //Fing Grup To Join
 //////
+//MOD
 export const findGroup = async (req, res) => {
-  console.log(req.query.groupId);
+  //console.log("group name " + req.query.groupName);
 
   const token = req.cookies.accessToken;
-  console.log("poslan piskotek: " + token);
+  //console.log("poslan piskotek: " + token);
   if (!token) return res.status(401).json("No token");
 
   try {
     const userInfo = await authToken(token);
 
-    const q = "SELECT * FROM `group` WHERE id = ?";
+    const q = "SELECT * FROM `group` WHERE name = ?";
 
-    const [data] = await db.promise().query(q, [req.query.groupId]);
+    const [data] = await db.promise().query(q, [req.query.groupName]);
 
-    const { joinPassword, ...other } = data[0];
+    //console.log([data]);
+
+    const { password, ...other } = data[0];
 
     return res.status(200).json(other);
   } catch (error) {
-    console.error(error);
+    //console.error(error);
     return res.status(500).json(error);
   }
 };
@@ -69,10 +73,12 @@ export const findGroup = async (req, res) => {
 //////
 //Join Grup
 //////
+//MOD ne dela ce si bil kickan
 export const joinGroup = async (req, res) => {
   //preveri da se ne pridruzi skupini dvakrat
 
-  console.log(req.body);
+  console.log("Prejel podateke id " + req.body.groupId);
+  console.log("Prejel podateke name" + req.body.password);
 
   const token = req.cookies.accessToken;
   console.log("poslan piskotek: " + token);
@@ -85,12 +91,9 @@ export const joinGroup = async (req, res) => {
 
     const [data] = await db.promise().query(q, [req.body.groupId]);
 
-    if (data.length == 0) return res.status(404).json("Uporabnik ne obstaja");
+    if (data.length == 0) return res.status(404).json("Skupina ne obstaja");
 
-    const checkedPass = bcrypt.compareSync(
-      req.body.password,
-      data[0].joinPassword
-    );
+    const checkedPass = bcrypt.compareSync(req.body.password, data[0].password);
 
     if (!checkedPass) return res.status(400).json("Napacno geslo");
 
@@ -101,7 +104,7 @@ export const joinGroup = async (req, res) => {
 
     const [data2] = await db.promise().query(q2, values2);
 
-    const { joinPassword, ...other } = data[0];
+    const { password, ...other } = data[0];
 
     console.log("dodal clana" + other);
     return res.status(200).json(other);
@@ -114,6 +117,7 @@ export const joinGroup = async (req, res) => {
 //////
 //Get List Of My Grup
 //////
+//MOD ?
 export const myGroups = async (req, res) => {
   const token = req.cookies.accessToken;
   console.log("poslan piskotek: " + token);
@@ -141,6 +145,7 @@ export const myGroups = async (req, res) => {
 //////
 //Get Group Data
 //////
+//MOD ?
 export const groupData = async (req, res) => {
   const token = req.cookies.accessToken;
   if (!token) return res.status(401).json("No token");
@@ -157,10 +162,6 @@ export const groupData = async (req, res) => {
 
     if (data.length == 0) return res.status(404).json("Nisi clan skupin");
 
-    const groupToken = jwt.sign(data[0], process.env.SECRETKEY, {
-      expiresIn: "1h",
-    });
-
     res.status(200).json(data[0]);
   } catch (err) {
     console.error("Napaka pri poizvedbi:", err);
@@ -171,27 +172,20 @@ export const groupData = async (req, res) => {
 //////
 //Delite Group
 //////
+//MOD
 export const deleteGroup = async (req, res) => {
   const token = req.cookies.accessToken;
-  console.log("DELETEGROUP poslan piskotek " + token);
-  if (!token) return res.status(401).json("No token");
-
-  const groupToken = req.cookies.groupToken;
-  console.log("DELETEGROUP poslan piskotek " + groupToken);
+  //console.log("DELETEGROUP poslan piskotek " + token);
   if (!token) return res.status(401).json("No token");
 
   try {
     const userInfo = await authToken(token);
-    const groupInfo = await authToken(groupToken);
-    console.log("Group info " + groupInfo.id);
     console.log("User info " + userInfo.id);
+    const groupId = req.params.groupId;
 
-    const q =
-      "SELECT role FROM user_group WHERE id = ? AND user_id = ? AND group_id = ?";
+    const q = "SELECT role FROM user_group WHERE user_id = ? AND group_id = ?";
 
-    const [data] = await db
-      .promise()
-      .query(q, [groupInfo.userGroupId, userInfo.id, groupInfo.id]);
+    const [data] = await db.promise().query(q, [userInfo.id, groupId]);
 
     if (!data[0].role == "admin") {
       return res.status(500).json("Only admin can delite");
@@ -199,7 +193,7 @@ export const deleteGroup = async (req, res) => {
 
     const q1 = "DELETE FROM `group` WHERE id = ?";
 
-    const [data2] = await db.promise().query(q1, [groupInfo.id]);
+    const [data2] = await db.promise().query(q1, [groupId]);
 
     return res.status(200).json("You have deleted group");
   } catch (error) {

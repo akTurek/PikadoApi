@@ -9,6 +9,7 @@ dotenv.config();
 //////
 // LogIn
 //////
+//MOD
 export const login = async (req, res) => {
   console.log(req.body);
   try {
@@ -46,6 +47,7 @@ export const login = async (req, res) => {
 //////
 // Register
 //////
+//MOD
 export const register = async (req, res) => {
   try {
     const q = "SELECT * FROM user WHERE username = ?";
@@ -73,6 +75,7 @@ export const register = async (req, res) => {
 //////
 // LogOut
 //////
+//MOD
 export const logout = (req, res) => {
   res
     .clearCookie("accessToken", {
@@ -85,6 +88,7 @@ export const logout = (req, res) => {
 //////
 // Change Password
 //////
+//MOD
 export const changePassword = async (req, res) => {
   const token = req.cookies.accessToken;
   if (!token) return res.status(401).json("No token");
