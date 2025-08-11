@@ -134,6 +134,7 @@ export const myGroups = async (req, res) => {
     const [data] = await db.promise().query(q, userInfo.id);
 
     if (data.length == 0) return res.status(404).json("Nisi clan skupin");
+    console.log(data + "--------------------------------");
 
     return res.status(200).json(data);
   } catch (err) {

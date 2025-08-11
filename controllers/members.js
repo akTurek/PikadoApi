@@ -19,26 +19,26 @@ export const getMembers = async (req, res) => {
     console.log("GET MEMBERS groupId, userId: " + groupId + " " + userInfo.id);
 
     const q = `
-    SELECT
-      ug.id AS userGroupId,
-      u.username,
-      u.id  AS userId,
-      COALESCE(SUM(ugm.place = 1), 0) AS n1st
-  FROM user_group AS ug
-  JOIN \`user\` AS u
-    ON u.id = ug.user_id
-  LEFT JOIN user_game AS ugm
-    ON ugm.user_id = u.id
-  LEFT JOIN game AS g
-    ON g.id = ugm.game_id
-  WHERE ug.group_id = ?
-    AND g.group_id = ug.group_id
-  GROUP BY ug.id, u.username, u.id
-  ORDER BY n1st DESC
+SELECT
+  ug.id AS id,
+  u.username,
+  u.id AS userId,
+  COALESCE(SUM(CASE WHEN ugm.place = 1 THEN 1 ELSE 0 END), 0) AS n1st
+FROM user_group AS ug
+JOIN \`user\` AS u
+  ON u.id = ug.user_id
+LEFT JOIN user_game AS ugm
+  ON ugm.user_id = u.id
+LEFT JOIN game AS g
+  ON g.id = ugm.game_id
+  AND g.group_id = ug.group_id
+WHERE ug.group_id = ?
+GROUP BY ug.id, u.username, u.id
+ORDER BY n1st DESC;
 `;
 
     const [data] = await db.promise().query(q, [groupId]);
-    console.log(data);
+    console.log(JSON.stringify(data, null, 2));
     return res.status(200).json(data);
   } catch (error) {
     console.error(error);
