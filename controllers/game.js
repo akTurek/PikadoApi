@@ -378,11 +378,30 @@ export const leaveGame = async (req, res) => {
   try {
     const userInfo = await authToken(token);
     const gameId = parseInt(req.params.gameId, 10);
+    const playerId = parseInt(req.params.playerId, 10);
 
-    //dodaj
-    const players = games.get(gameId).players;
+    console.log("-------------" + playerId + "------------" + gameId);
 
-    return res.status(200).json(players);
+    const q1 =
+      "SELECT * FROM `user_game`  WHERE `user_id` = ?  AND `game_id` = ?";
+    const [data] = await db.promise().query(q1, [userInfo.id, gameId]);
+    console.log(data);
+
+    const game = games.get(gameId);
+
+    //Ish popravi za safty
+    if (data) {
+      game.players = game.players.filter(
+        (player) => player.playerId !== playerId
+      );
+      console.log(game.players);
+    }
+
+    if (game.gameStatus === "finished") {
+      games.delete(gameId);
+    }
+
+    return res.status(200).json("ok");
   } catch (err) {
     console.error("Napaka pri poizvedbi:", err);
     return res.status(500).json(err);

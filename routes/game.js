@@ -13,6 +13,6 @@ router.get("/getinfo", myGame);
 router.put("/changestatus/:gameId", changeStatus);
 router.get("/getplayers/:gameId", getPlayers);
 router.put("/updatescore/:gameId/:playerId", updateScore);
-router.delete("/leave/:gameId/", leaveGame);
+router.delete("/leave/:gameId/:playerId", leaveGame);
 
 export default router;
